@@ -5,12 +5,13 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import './Baje.css';
 
+// API URL from env
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const supabase = createClient(
   'https://lgurtucciqvwgjaphdqp.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxndXJ0dWNjaXF2d2dqYXBoZHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk2MzgzNTAsImV4cCI6MjA0NTIxNDM1MH0.I1ajlHp5b4pGL-NQzzvcVdznoiyIvps49Ws5GZHSXzk'
 );
-
-const VITE_API_URL = 'https://isleaihono.baisig246.workers.dev';
 
 function Baje() {
   const location = useLocation();
@@ -175,7 +176,7 @@ function Baje() {
   useEffect(() => {
     const fetchNotificationCount = async () => {
       try {
-        const response = await axios.get(`${VITE_API_URL}/api/notifications`);
+        const response = await axios.get(`${apiUrl}/api/notifications`);
         const notifications = response.data || [];
         
         const lastSeen = localStorage.getItem('lastSeenNotificationCount');
@@ -492,7 +493,7 @@ function Baje() {
         setMessages((prev) => [...prev, fileMessage]);
 
         const response = await axios.post(
-          `${VITE_API_URL}/ask`,
+          `${apiUrl}/ask`,
           {
             prompt: `User uploaded a file: ${file.name} for ${selectedCountry.name}`,
             fileUrl: signedUrl
@@ -514,7 +515,7 @@ function Baje() {
           user_id: session.user.id,
           message: `You uploaded a file: ${file.name}`
         });
-        const notificationResponse = await axios.get(`${VITE_API_URL}/api/notifications`);
+        const notificationResponse = await axios.get(`${apiUrl}/api/notifications`);
         const notifications = notificationResponse.data || [];
         console.log('Notifications after file upload:', notifications.length);
         setNotificationCount(notifications.length);
@@ -560,7 +561,7 @@ function Baje() {
       await incrementPromptCount(session.user.id);
 
       const response = await axios.post(
-        `${VITE_API_URL}/ask`,
+        `${apiUrl}/ask`,
         {
           prompt: `${selectedCountry.name} ${activeAgent}: ${inputValue}`,
         },
@@ -581,7 +582,7 @@ function Baje() {
         user_id: session.user.id,
         message: `New response from ${selectedCountry.name} ${activeAgent}`
       });
-      const notificationResponse = await axios.get(`${VITE_API_URL}/api/notifications`);
+      const notificationResponse = await axios.get(`${apiUrl}/api/notifications`);
       const notifications = notificationResponse.data || [];
       console.log('Notifications after message:', notifications.length);
       setNotificationCount(notifications.length);
