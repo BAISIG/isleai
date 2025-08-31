@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
+const VITE_API_URL = 'https://isleaihono.baisig246.workers.dev';
+
 const styles = {
   pageWrapper: {
     margin: 0,
@@ -187,7 +189,7 @@ export default function Notifications() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get("/api/notifications");
+        const response = await axios.get(`${VITE_API_URL}/api/notifications`);
         setNotifications(response.data);
         setLoading(false);
       } catch (err) {
@@ -208,15 +210,15 @@ export default function Notifications() {
             style={styles.returnButton}
             onClick={() => navigate('/baje')}
           >
-<FontAwesomeIcon
-  icon={faArrowRightFromBracket}
-  style={{
-    width: "30px",     // increase width
-    height: "30px",    // keep it proportional
-    marginTop: "28px", // push it down
-    marginRight: "35px"
-  }}
-/>
+            <FontAwesomeIcon
+              icon={faArrowRightFromBracket}
+              style={{
+                width: "30px",     // increase width
+                height: "30px",    // keep it proportional
+                marginTop: "28px", // push it down
+                marginRight: "35px"
+              }}
+            />
           </button>
         </div>
 
