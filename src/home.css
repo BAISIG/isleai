@@ -1,0 +1,12 @@
+/* body {
+  background: ;
+} */
+
+.home-container {
+  display: flex;
+  background:  white !important ;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  background-color: white; /* Move body background here */
+}

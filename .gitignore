@@ -1,0 +1,33 @@
+# Node modules
+node_modules/
+**/node_modules/
+
+# Build / dist folders
+dist/
+build/
+**/dist/
+**/build/
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+**/.env
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / editor
+.vscode/
+*.code-workspace
+.idea/
+
+# Miscellaneous
+*.tmp
+*.swp
+*.bak
+rm -r -Force .git
