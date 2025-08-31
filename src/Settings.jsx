@@ -8,6 +8,8 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxndXJ0dWNjaXF2d2dqYXBoZHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk2MzgzNTAsImV4cCI6MjA0NTIxNDM1MH0.I1ajlHp5b4pGL-NQzzvcVdznoiyIvps49Ws5GZHSXzk'
 );
 
+const VITE_API_URL = 'https://isleaihono.baisig246.workers.dev';
+
 const Settings = () => {
   const [formData, setFormData] = useState({
     organizationName: "Acme Corp",
@@ -149,7 +151,7 @@ const Settings = () => {
       const userId = session.user.id;
       const accessToken = session.access_token;
 
-      const response = await fetch('/api/delete-user', {
+      const response = await fetch(`${VITE_API_URL}/api/delete-user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -812,40 +814,8 @@ const Settings = () => {
           }
         }
 
-        .sectionDivider {
-          height: 1px;
-          background-color: #eee;
-          margin: 1rem 0;
-        }
-        @media (min-width: 320px) and (max-width: 479px) {
-          .sectionDivider {
-            margin: 0.75rem 0;
-          }
-        }
-        @media (min-width: 481px) and (max-width: 767px) {
-          .sectionDivider {
-            margin: 0.875rem 0;
-          }
-        }
-        @media (min-width: 768px) and (max-width: 1024px) {
-          .sectionDivider {
-            margin: 1rem 0;
-          }
-        }
-        @media (min-width: 1025px) and (max-width: 1280px) {
-          .sectionDivider {
-            margin: 1.125rem 0;
-          }
-        }
-        @media (min-width: 1281px) {
-          .sectionDivider {
-            margin: 1.25rem 0;
-          }
-        }
-
         .errorText {
           color: #e00;
-          font-size: 0.875rem;
           margin-top: 0.5rem;
         }
         @media (min-width: 320px) and (max-width: 479px) {
@@ -856,7 +826,7 @@ const Settings = () => {
         }
         @media (min-width: 481px) and (max-width: 767px) {
           .errorText {
-            font-size: 0.8125rem;
+            font-size: 0.875rem;
             margin-top: 0.375rem;
           }
         }
