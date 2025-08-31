@@ -10,6 +10,8 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxndXJ0dWNjaXF2d2dqYXBoZHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk2MzgzNTAsImV4cCI6MjA0NTIxNDM1MH0.I1ajlHp5b4pGL-NQzzvcVdznoiyIvps49Ws5GZHSXzk'
 );
 
+const VITE_API_URL = 'https://isleaihono.baisig246.workers.dev';
+
 function Baje() {
   const location = useLocation();
   const messagesEndRef = useRef(null);
@@ -43,8 +45,8 @@ function Baje() {
   const navigate = useNavigate();
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const FACT_INTERVAL = 1800000; // 30 minutes
-const TIP_INTERVAL = 1800000;  // 30 minutes
+  const FACT_INTERVAL = 1800000; // 30 minutes
+  const TIP_INTERVAL = 1800000;  // 30 minutes
 
   const caribbeanCountries = [
     { name: 'Barbados', nickname: 'Bajan', flagUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Flag_of_Barbados.svg/1200px-Flag_of_Barbados.svg.png' },
@@ -173,7 +175,7 @@ const TIP_INTERVAL = 1800000;  // 30 minutes
   useEffect(() => {
     const fetchNotificationCount = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/notifications');
+        const response = await axios.get(`${VITE_API_URL}/api/notifications`);
         const notifications = response.data || [];
         
         const lastSeen = localStorage.getItem('lastSeenNotificationCount');
@@ -490,7 +492,7 @@ const TIP_INTERVAL = 1800000;  // 30 minutes
         setMessages((prev) => [...prev, fileMessage]);
 
         const response = await axios.post(
-          'http://localhost:3000/ask',
+          `${VITE_API_URL}/ask`,
           {
             prompt: `User uploaded a file: ${file.name} for ${selectedCountry.name}`,
             fileUrl: signedUrl
@@ -512,7 +514,7 @@ const TIP_INTERVAL = 1800000;  // 30 minutes
           user_id: session.user.id,
           message: `You uploaded a file: ${file.name}`
         });
-        const notificationResponse = await axios.get('http://localhost:3000/api/notifications');
+        const notificationResponse = await axios.get(`${VITE_API_URL}/api/notifications`);
         const notifications = notificationResponse.data || [];
         console.log('Notifications after file upload:', notifications.length);
         setNotificationCount(notifications.length);
@@ -558,7 +560,7 @@ const TIP_INTERVAL = 1800000;  // 30 minutes
       await incrementPromptCount(session.user.id);
 
       const response = await axios.post(
-        'http://localhost:3000/ask',
+        `${VITE_API_URL}/ask`,
         {
           prompt: `${selectedCountry.name} ${activeAgent}: ${inputValue}`,
         },
@@ -579,7 +581,7 @@ const TIP_INTERVAL = 1800000;  // 30 minutes
         user_id: session.user.id,
         message: `New response from ${selectedCountry.name} ${activeAgent}`
       });
-      const notificationResponse = await axios.get('http://localhost:3000/api/notifications');
+      const notificationResponse = await axios.get(`${VITE_API_URL}/api/notifications`);
       const notifications = notificationResponse.data || [];
       console.log('Notifications after message:', notifications.length);
       setNotificationCount(notifications.length);
