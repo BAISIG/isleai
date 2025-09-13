@@ -1896,7 +1896,8 @@ const Dashboard = () => {
       <div className="dashboard-container">
         <div className="sidebar">
           <a onClick={handleLogoClick}>
-            <img src="/isle4.png" alt="ISLE Logo" className="sidebar-logo" />
+             <img src={isleImage} alt="Isle" className="sidebar-logo" />
+         
           </a>
           {showReturnNote && (
             <a className="return-note" onClick={handleReturnToChat}>
