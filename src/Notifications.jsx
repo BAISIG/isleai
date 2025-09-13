@@ -189,7 +189,7 @@ export default function Notifications() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get(`${VITE_API_URL}/api/notifications`);
+        const response = await axios.get(`${VITE_API_URL}/notifications`);
         setNotifications(response.data);
         setLoading(false);
       } catch (err) {
