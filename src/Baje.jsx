@@ -176,7 +176,7 @@ function Baje() {
   useEffect(() => {
     const fetchNotificationCount = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/api/notifications`);
+        const response = await axios.get(`${apiUrl}/notifications`);
         const notifications = response.data || [];
         
         const lastSeen = localStorage.getItem('lastSeenNotificationCount');
@@ -515,7 +515,7 @@ function Baje() {
           user_id: session.user.id,
           message: `You uploaded a file: ${file.name}`
         });
-        const notificationResponse = await axios.get(`${apiUrl}/api/notifications`);
+        const notificationResponse = await axios.get(`${apiUrl}/notifications`);
         const notifications = notificationResponse.data || [];
         console.log('Notifications after file upload:', notifications.length);
         setNotificationCount(notifications.length);
@@ -582,7 +582,7 @@ function Baje() {
         user_id: session.user.id,
         message: `New response from ${selectedCountry.name} ${activeAgent}`
       });
-      const notificationResponse = await axios.get(`${apiUrl}/api/notifications`);
+      const notificationResponse = await axios.get(`${apiUrl}/notifications`);
       const notifications = notificationResponse.data || [];
       console.log('Notifications after message:', notifications.length);
       setNotificationCount(notifications.length);
