@@ -673,7 +673,7 @@ function Baje() {
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'Profile', path: '/profile' },
-    { name: 'Dashboard', path: '/dashboard' },
+    // { name: 'Dashboard', path: '/dashboard' },
     { name: 'Saved Chats', path: '/saved-chats' },
     { name: 'Settings', path: '/settings' },
     { name: 'Help', path: '/help' },
