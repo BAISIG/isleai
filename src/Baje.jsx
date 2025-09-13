@@ -73,18 +73,18 @@ function Baje() {
       }
 
       if (data) {
-        // Row exists → update count
+        // Row exists → update count and updated_at
         const { error: updateError } = await supabase
           .from("prompts_count")
-          .update({ count: data.count + 1 })
+          .update({ count: data.count + 1, updated_at: new Date().toISOString() })
           .eq("id", data.id);
 
         if (updateError) console.error("Error updating prompts_count:", updateError);
       } else {
-        // Row doesn't exist → insert with count = 1
+        // Row doesn't exist → insert with count = 1 and created_at
         const { error: insertError } = await supabase
           .from("prompts_count")
-          .insert({ user_id: userId, count: 1 });
+          .insert({ user_id: userId, count: 1, created_at: new Date().toISOString() });
 
         if (insertError) console.error("Error inserting prompts_count:", insertError);
       }
@@ -513,7 +513,8 @@ function Baje() {
 
         await supabase.from('notifications').insert({
           user_id: session.user.id,
-          message: `You uploaded a file: ${file.name}`
+          message: `You uploaded a file: ${file.name}`,
+          created_at: new Date().toISOString()
         });
         const notificationResponse = await axios.get(`${apiUrl}/notifications`);
         const notifications = notificationResponse.data || [];
@@ -580,7 +581,8 @@ function Baje() {
 
       await supabase.from('notifications').insert({
         user_id: session.user.id,
-        message: `New response from ${selectedCountry.name} ${activeAgent}`
+        message: `New response from ${selectedCountry.name} ${activeAgent}`,
+        created_at: new Date().toISOString()
       });
       const notificationResponse = await axios.get(`${apiUrl}/notifications`);
       const notifications = notificationResponse.data || [];
