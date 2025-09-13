@@ -7,7 +7,6 @@ import Baje from './Baje.jsx';
 import BajeTour from './BajeTour.jsx';
 import Login from './Login.jsx';
 import Home from './Home.jsx';
-import Dashboard from './Dashboard.jsx';
 import HelpPage from './FAQ.jsx';
 import Packages from './Packages.jsx';
 import Profile from './Profile.jsx';
@@ -91,7 +90,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/baje" element={<Baje />} />
         <Route path="/baje-tour" element={<BajeTour />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/help" element={<HelpPage />} />
         <Route path="/packages" element={<Packages />} />
         <Route path="/profile" element={<Profile />} />
