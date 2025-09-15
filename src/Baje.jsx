@@ -672,7 +672,6 @@ function Baje() {
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'Profile', path: '/profile' },
-    // { name: 'Dashboard', path: '/dashboard' },
     { name: 'Saved Chats', path: '/saved-chats' },
     { name: 'Settings', path: '/settings' },
     { name: 'Help', path: '/help' },
@@ -730,7 +729,7 @@ function Baje() {
               ...(avatarImage && { backgroundImage: `url(${avatarImage})`, backgroundColor: 'transparent' })
             }}
           >
-            {!avatarImage}
+            {!avatarImage && 'ISLE'}
           </div>
           <div className="ai-info">
             <div className="ai-name">ISLE</div>
@@ -1181,7 +1180,7 @@ function Baje() {
           text-decoration: underline;
         }
         .bell-container {
-          position:shopping-cart relative;
+          position: relative;
           width: 30px;
           height: 30px;
           cursor: pointer;
@@ -1201,9 +1200,6 @@ function Baje() {
           justify-content: center;
           visibility: hidden;
           box-shadow: 0 0 0 2px white;
-        }
-        .bell-container .badge {
-          visibility: visible;
         }
         @media only screen and (max-width: 450px) {
           .chat-header {
