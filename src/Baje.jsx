@@ -730,7 +730,7 @@ function Baje() {
               ...(avatarImage && { backgroundImage: `url(${avatarImage})`, backgroundColor: 'transparent' })
             }}
           >
-            {!avatarImage && 'ISLE'}
+            {!avatarImage}
           </div>
           <div className="ai-info">
             <div className="ai-name">ISLE</div>
