@@ -155,7 +155,6 @@ function Baje() {
           created_at: new Date().toISOString()
         }
       ]);
-      saveChatToSupabase(newSessionId, []);
     }
 
     setUsageStartTime(Date.now());
@@ -808,6 +807,8 @@ function Baje() {
             >
               {notificationCount}
             </span>
+
+            
           </div>
           <button className={`hamburger-button ${isNavOpen ? 'active' : ''}`} onClick={toggleNav}>
             <span className="hamburger-button-span"></span>
@@ -1181,7 +1182,7 @@ function Baje() {
         .message a:hover {
           text-decoration: underline;
         }
-        .bell-container {
+       .bell-container {
           position: relative;
           width: 30px;
           height: 30px;
