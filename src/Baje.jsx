@@ -155,7 +155,6 @@ function Baje() {
           created_at: new Date().toISOString()
         }
       ]);
-      saveChatToSupabase(newSessionId, []);
     }
 
     setUsageStartTime(Date.now());
@@ -1182,7 +1181,7 @@ function Baje() {
           text-decoration: underline;
         }
         .bell-container {
-          position: relative;
+          position:shopping-cart relative;
           width: 30px;
           height: 30px;
           cursor: pointer;
