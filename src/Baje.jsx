@@ -155,6 +155,7 @@ function Baje() {
           created_at: new Date().toISOString()
         }
       ]);
+      saveChatToSupabase(newSessionId, []);
     }
 
     setUsageStartTime(Date.now());
@@ -672,6 +673,7 @@ function Baje() {
   const navItems = [
     { name: 'Home', path: '/' },
     { name: 'Profile', path: '/profile' },
+    // { name: 'Dashboard', path: '/dashboard' },
     { name: 'Saved Chats', path: '/saved-chats' },
     { name: 'Settings', path: '/settings' },
     { name: 'Help', path: '/help' },
@@ -1200,6 +1202,9 @@ function Baje() {
           justify-content: center;
           visibility: hidden;
           box-shadow: 0 0 0 2px white;
+        }
+        .bell-container .badge {
+          visibility: visible;
         }
         @media only screen and (max-width: 450px) {
           .chat-header {
