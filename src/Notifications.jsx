@@ -132,53 +132,53 @@ const styles = {
   },
 };
 
-// const icons = {
-//   traffic: (
-//     <svg
-//       width="22"
-//       height="22"
-//       viewBox="0 0 24 24"
-//       fill="none"
-//       stroke="#4ade80"
-//       strokeWidth="2"
-//       strokeLinecap="round"
-//       strokeLinejoin="round"
-//     >
-//       <circle cx="12" cy="12" r="10" />
-//       <polyline points="12 6 12 12 16 14" />
-//     </svg>
-//   ),
-//   water: (
-//     <svg
-//       width="22"
-//       height="22"
-//       viewBox="0 0 24 24"
-//       fill="none"
-//       stroke="#22d3ee"
-//       strokeWidth="2"
-//       strokeLinecap="round"
-//       strokeLinejoin="round"
-//     >
-//       <path d="M12 2C12 2 7 9 7 13a5 5 0 0 0 10 0c0-4-5-11-5-11z" />
-//     </svg>
-//   ),
-//   waste: (
-//     <svg
-//       width="22"
-//       height="22"
-//       viewBox="0 0 24 24"
-//       fill="none"
-//       stroke="#fbbf24"
-//       strokeWidth="2"
-//       strokeLinecap="round"
-//       strokeLinejoin="round"
-//     >
-//       <rect x="3" y="6" width="18" height="14" rx="2" ry="2" />
-//       <line x1="3" y1="6" x2="21" y2="6" />
-//       <line x1="9" y1="6" x2="9" y2="20" />
-//     </svg>
-//   ),
-// };
+const icons = {
+  traffic: (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#4ade80"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  ),
+  water: (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#22d3ee"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 2C12 2 7 9 7 13a5 5 0 0 0 10 0c0-4-5-11-5-11z" />
+    </svg>
+  ),
+  waste: (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#fbbf24"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="6" width="18" height="14" rx="2" ry="2" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="9" y1="6" x2="9" y2="20" />
+    </svg>
+  ),
+};
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
