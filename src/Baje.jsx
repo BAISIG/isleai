@@ -496,6 +496,7 @@ function Baje() {
           {
             prompt: `User uploaded a file: ${file.name} for ${selectedCountry.name}`,
             fileUrl: signedUrl
+             userId: session.user.id   // ✅ add this
           },
           {
             headers: { 'Content-Type': 'application/json' }
