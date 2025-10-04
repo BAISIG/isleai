@@ -495,7 +495,7 @@ function Baje() {
           `${apiUrl}/ask`,
           {
             prompt: `User uploaded a file: ${file.name} for ${selectedCountry.name}`,
-            fileUrl: signedUrl
+            fileUrl: signedUrl,
              userId: session.user.id   // ✅ add this
           },
           {
@@ -565,6 +565,8 @@ function Baje() {
         `${apiUrl}/ask`,
         {
           prompt: `${selectedCountry.name} ${activeAgent}: ${inputValue}`,
+          userId: session.user.id 
+          
         },
         {
           headers: { 'Content-Type': 'application/json' },
