@@ -677,8 +677,8 @@ function Baje() {
     { name: 'Profile', path: '/profile' },
     // { name: 'Dashboard', path: '/dashboard' },
     { name: 'Saved Chats', path: '/saved-chats' },
-    { name: 'Settings', path: '/settings' },
-    { name: 'Help', path: '/help' },
+   // { name: 'Settings', path: '/settings' },
+   // { name: 'Help', path: '/help' },
     {
       name: 'Logout',
       path: '/login',
