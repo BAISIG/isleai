@@ -90,12 +90,12 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/baje" element={<Baje />} />
         <Route path="/baje-tour" element={<BajeTour />} />
-        <Route path="/help" element={<HelpPage />} />
+        {/* <Route path="/help" element={<HelpPage />} /> */}
         <Route path="/packages" element={<Packages />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/report" element={<ReportIssue />} />
         <Route path="/saved-chats" element={<SavedChat />} />
-        <Route path="/settings" element={<Settings />} />
+        {/* <Route path="/settings" element={<Settings />} /> */}
         <Route path="/workbench" element={<Workbench />} />
         <Route path="/payment-card" element={<PaymentCard />} />
         <Route path="/onboarding" element={<Onboarding />} />
