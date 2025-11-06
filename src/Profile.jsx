@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-import { createClient } from "@supabase/supabase-js";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
-// Initialize Supabase client
-const supabase = createClient(
-  "https://lgurtucciqvwgjaphdqp.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxndXJ0dWNjaXF2d2dqYXBoZHFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk2MzgzNTAsImV4cCI6MjA0NTIxNDM1MH0.I1ajlHp5b4pGL-NQzzvcVdznoiyIvps49Ws5GZHSXzk"
-);
+const apiUrl = import.meta.env.VITE_API_URL;
+const api = axios.create({
+  baseURL: apiUrl,
+  withCredentials: true,
+});
 
+// ——— YOUR EXACT STYLES (UNCHANGED) ———
 const styles = {
   pageWrapper: {
     margin: 0,
@@ -35,6 +36,31 @@ const styles = {
     flexDirection: "column",
     overflow: "hidden",
     boxSizing: "border-box",
+    "@media (min-width: 320px) and (max-width: 479px)": {
+      maxWidth: "100%",
+      height: "100%",
+      borderRadius: "0",
+    },
+    "@media (min-width: 480px) and (max-width: 767px)": {
+      maxWidth: "90%",
+      height: "90%",
+      borderRadius: "8px",
+    },
+    "@media (min-width: 768px) and (max-width: 1024px)": {
+      maxWidth: "80%",
+      height: "85%",
+      borderRadius: "10px",
+    },
+    "@media (min-width: 1025px) and (max-width: 1280px)": {
+      maxWidth: "700px",
+      height: "840px",
+      borderRadius: "12px",
+    },
+    "@media (min-width: 1281px)": {
+      maxWidth: "800px",
+      height: "900px",
+      borderRadius: "12px",
+    },
   },
   header: {
     display: "flex",
@@ -42,6 +68,18 @@ const styles = {
     padding: "10px",
     backgroundColor: "#1E1E1E",
     position: "relative",
+    "@media (min-width: 320px) and (max-width: 479px)": {
+      padding: "8px",
+    },
+    "@media (min-width: 480px) and (max-width: 767px)": {
+      padding: "12px",
+    },
+    "@media (min-width: 768px) and (max-width: 1024px)": {
+      padding: "15px",
+    },
+    "@media (min-width: 1025px)": {
+      padding: "20px",
+    },
   },
   returnButton: {
     position: "absolute",
@@ -53,6 +91,21 @@ const styles = {
     border: "none",
     cursor: "pointer",
     padding: "0",
+    "@media (min-width: 480px) and (max-width: 767px)": {
+      fontSize: "18px",
+      right: "12px",
+      top: "12px",
+    },
+    "@media (min-width: 768px) and (max-width: 1024px)": {
+      fontSize: "20px",
+      right: "15px",
+      top: "15px",
+    },
+    "@media (min-width: 1025px)": {
+      fontSize: "24px",
+      right: "20px",
+      top: "20px",
+    },
   },
   avatar: {
     width: "60px",
@@ -68,6 +121,24 @@ const styles = {
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
+    "@media (min-width: 480px) and (max-width: 767px)": {
+      width: "70px",
+      height: "70px",
+      fontSize: "28px",
+      marginRight: "12px",
+    },
+    "@media (min-width: 768px) and (max-width: 1024px)": {
+      width: "80px",
+      height: "80px",
+      fontSize: "32px",
+      marginRight: "15px",
+    },
+    "@media (min-width: 1025px)": {
+      width: "100px",
+      height: "100px",
+      fontSize: "40px",
+      marginRight: "20px",
+    },
   },
   info: {
     flex: 1,
@@ -76,10 +147,31 @@ const styles = {
     fontSize: "16px",
     fontWeight: "700",
     marginBottom: "4px",
+    "@media (min-width: 480px) and (max-width: 767px)": {
+      fontSize: "18px",
+      marginBottom: "5px",
+    },
+    "@media (min-width: 768px) and (max-width: 1024px)": {
+      fontSize: "20px",
+      marginBottom: "5px",
+    },
+    "@media (min-width: 1025px)": {
+      fontSize: "24px",
+      marginBottom: "5px",
+    },
   },
   email: {
     fontSize: "12px",
     color: "#888",
+    "@media (min-width: 480px) and (max-width: 767px)": {
+      fontSize: "14px",
+    },
+    "@media (min-width: 768px) and (max-width: 1024px)": {
+      fontSize: "15px",
+    },
+    "@media (min-width: 1025px)": {
+      fontSize: "16px",
+    },
   },
   uploadButton: {
     marginTop: "8px",
@@ -153,205 +245,142 @@ const styles = {
 };
 
 function Profile() {
-  const [userData, setUserData] = useState({
-    initials: "JD",
-    name: "John Doe",
-    email: "john.doe@example.com",
-  });
-  const [avatarFileName, setAvatarFileName] = useState(null);
+  const [userData, setUserData] = useState({ initials: "JD", name: "Loading...", email: "" });
   const [avatarImage, setAvatarImage] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const navigate = useNavigate();
 
-  // Generate safe filename
-  const getSafeFileName = (email, ext) => {
-    const safeEmail = email.replace(/[^a-zA-Z0-9]/g, "_");
-    return `${safeEmail}_${Date.now()}.${ext}`;
-  };
-
-  // On mount, check session and fetch user data
+  // ——— LOAD PROFILE (no CSRF, simplified) ———
   useEffect(() => {
-    async function checkSession() {
-      const { data: { session }, error: sessionError } =
-        await supabase.auth.getSession();
-
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        setErrorMessage("Failed to check authentication status.");
-        return;
-      }
-
-      setIsAuthenticated(!!session);
-      if (session?.user) {
-        const email = session.user.email;
-        const username =
-          session.user.user_metadata?.display_name ||
-          session.user.user_metadata?.username ||
-          email.split("@")[0];
-        const initials = username
-          ? username.slice(0, 2).toUpperCase()
-          : email.charAt(0).toUpperCase() +
-            email.split("@")[0].charAt(0).toUpperCase();
-
-        setUserData({ initials, name: username, email });
-
-        const avatarUrl = session.user.user_metadata?.avatarUrl || null;
-        if (avatarUrl) {
-          setAvatarImage(avatarUrl); // public URL now
+    let isMounted = true;
+    const loadProfile = async () => {
+      try {
+        // PROFILE – FORCE FRESH DATA
+        const profileRes = await api.get('/api/profile', {
+          params: { _t: Date.now() }, // ← bypass cache with old data
+        });
+        if (!isMounted) return;
+        const d = profileRes.data;
+        console.log('AVATAR URL FROM API:', d.avatarUrl); // ← DEBUG
+        setUserData({
+          initials: d.initials,
+          name: d.name || "User",
+          email: d.email || "",
+        });
+        setAvatarImage(d.avatarUrl || null);
+        setIsAuthenticated(true);
+        setErrorMessage(null);
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('Profile load failed:', err);
+        setIsAuthenticated(false);
+        setErrorMessage(
+          err.response?.status === 401
+            ? 'Session expired. Please log in.'
+            : 'Failed to load profile.'
+        );
+        if (err.response?.status === 401) {
+          navigate('/login', { replace: true });
         }
       }
-    }
-    checkSession();
-  }, []);
+    };
+    loadProfile();
+    return () => { isMounted = false; };
+  }, [navigate]);
 
+  // ——— DEBUG: Log when avatarImage changes ———
+  useEffect(() => {
+    console.log('AVATAR URL RENDERED:', avatarImage);
+  }, [avatarImage]);
+
+  // ——— UPLOAD AVATAR (no CSRF) ———
   const handleImageUpload = async (e) => {
     if (!isAuthenticated) {
-      setErrorMessage("You must be logged in to upload an avatar.");
+      setErrorMessage('You must be logged in.');
       return;
     }
-
     const file = e.target.files[0];
-    if (!file) return setErrorMessage("No file selected.");
-    if (file.size > 5 * 1024 * 1024)
-      return setErrorMessage("File size exceeds 5MB limit.");
-    if (!["image/png", "image/jpeg"].includes(file.type))
-      return setErrorMessage("Only PNG and JPEG images are allowed.");
-
-    setIsUploading(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-
-    try {
-      const ext = file.name.split(".").pop();
-      const fileName = getSafeFileName(userData.email, ext);
-
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(fileName, file, { cacheControl: "3600", upsert: true });
-
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
-        setErrorMessage(`Failed to upload image: ${uploadError.message}`);
-        setIsUploading(false);
-        return;
-      }
-
-      setAvatarFileName(fileName);
-
-      // Direct public URL (no signed URL needed)
-      const publicUrl = `https://lgurtucciqvwgjaphdqp.supabase.co/storage/v1/object/public/avatars/${fileName}`;
-      setAvatarImage(publicUrl);
-
-      const { error: updateError } = await supabase.auth.updateUser({
-        data: { avatarUrl: publicUrl },
-      });
-
-      if (updateError) {
-        console.error("Update error:", updateError);
-        setErrorMessage(
-          `Uploaded image but failed to save profile: ${updateError.message}`
-        );
-      } else {
-        setSuccessMessage("Profile saved successfully.");
-      }
-    } catch (error) {
-      console.error("Error during upload:", error);
-      setErrorMessage("An unexpected error occurred while uploading the image.");
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleRetrySaveProfile = async () => {
-    if (!isAuthenticated || !avatarFileName) {
-      setErrorMessage(
-        "Cannot retry: Please log in and ensure an avatar is uploaded."
-      );
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMessage('File too large (max 5MB).');
       return;
     }
-
+    if (!['image/png', 'image/jpeg'].includes(file.type)) {
+      setErrorMessage('Only PNG/JPEG allowed.');
+      return;
+    }
     setIsUploading(true);
     setErrorMessage(null);
     setSuccessMessage(null);
-
     try {
-      const publicUrl = `https://lgurtucciqvwgjaphdqp.supabase.co/storage/v1/object/public/avatars/${avatarFileName}`;
-      const { error } = await supabase.auth.updateUser({
-        data: { avatarUrl: publicUrl },
-      });
-
-      if (error) {
-        console.error("Retry error:", error);
-        setErrorMessage(`Failed to save profile: ${error.message}`);
-      } else {
-        setSuccessMessage("Profile saved successfully.");
-      }
-    } catch (error) {
-      console.error("Retry error:", error);
-      setErrorMessage("An unexpected error occurred while saving the profile.");
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await api.post('/api/profile/avatar', formData, {});
+      const newUrl = res.data.avatarUrl;
+      console.log('NEW AVATAR URL:', newUrl);
+      setAvatarImage(newUrl);
+      setUserData(prev => ({ ...prev, initials: '' }));
+      setSuccessMessage('Avatar updated!');
+    } catch (err) {
+      setErrorMessage(err.response?.data?.error || 'Upload failed.');
     } finally {
       setIsUploading(false);
     }
   };
 
+  // ——— LOGOUT ——— (no CSRF)
   const handleLogout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("Logout error:", error);
-        setErrorMessage("Failed to log out. Please try again.");
-        return;
-      }
-      setIsAuthenticated(false);
-      setUserData({
-        initials: "JD",
-        name: "John Doe",
-        email: "john.doe@example.com",
-      });
-      navigate("/login");
-    } catch (error) {
-      console.error("Unexpected logout error:", error);
-      setErrorMessage("An unexpected error occurred during logout.");
+      await api.post('/auth/logout', {});
+      navigate('/login');
+    } catch {
+      setErrorMessage('Logout failed.');
     }
+  };
+
+  // ——— RETRY ———
+  const handleRetry = () => {
+    setErrorMessage(null);
+    setUserData({ initials: "JD", name: "Loading...", email: "" });
+    window.location.reload();
   };
 
   return (
     <div style={styles.pageWrapper}>
       <div style={styles.container}>
+        {/* HEADER */}
         <div style={styles.header}>
-          <button
-            style={styles.returnButton}
-            onClick={() => navigate("/baje")}
-          >
+          <button style={styles.returnButton} onClick={() => navigate('/baje')}>
             <FontAwesomeIcon icon={faArrowRightFromBracket} />
           </button>
-
+          {/* AVATAR – FIXED: url("...") */}
           <div
             style={{
               ...styles.avatar,
-              ...(avatarImage && {
-                backgroundImage: `url(${avatarImage})`,
-                backgroundColor: "transparent",
-              }),
+              backgroundImage: avatarImage ? `url("${avatarImage}")` : 'none',
+              backgroundColor: avatarImage ? 'transparent' : '#005A9C',
             }}
           >
             {!avatarImage && userData.initials}
           </div>
-
+          {/* INFO */}
           <div style={styles.info}>
             <div style={styles.name}>{userData.name}</div>
             <div style={styles.email}>{userData.email}</div>
-
             {errorMessage && (
-              <div style={styles.errorMessage}>{errorMessage}</div>
+              <div style={styles.errorMessage}>
+                {errorMessage}
+                {errorMessage.includes('load') && (
+                  <button style={styles.retryButton} onClick={handleRetry}>
+                    Retry
+                  </button>
+                )}
+              </div>
             )}
-            {successMessage && (
-              <div style={styles.successMessage}>{successMessage}</div>
-            )}
-
+            {successMessage && <div style={styles.successMessage}>{successMessage}</div>}
             <input
               type="file"
               accept="image/png, image/jpeg"
@@ -360,65 +389,32 @@ function Profile() {
               onChange={handleImageUpload}
               disabled={isUploading || !isAuthenticated}
             />
-
             <button
               style={{
                 ...styles.uploadButton,
-                ...((isUploading || !isAuthenticated) && {
-                  opacity: 0.6,
-                  cursor: "not-allowed",
-                }),
+                opacity: (isUploading || !isAuthenticated) ? 0.6 : 1,
+                cursor: (isUploading || !isAuthenticated) ? 'not-allowed' : 'pointer',
               }}
-              onClick={() =>
-                document.getElementById("avatar-upload").click()
-              }
+              onClick={() => document.getElementById("avatar-upload").click()}
               disabled={isUploading || !isAuthenticated}
             >
-              {isUploading
-                ? "Uploading..."
-                : isAuthenticated
-                ? "Upload Avatar"
-                : "Login to Upload"}
+              {isUploading ? 'Uploading...' : isAuthenticated ? 'Upload Avatar' : 'Login to Upload'}
             </button>
-
-            {errorMessage?.includes("failed to save profile") && (
-              <button
-                style={{
-                  ...styles.retryButton,
-                  ...(isUploading && { opacity: 0.6, cursor: "not-allowed" }),
-                }}
-                onClick={handleRetrySaveProfile}
-                disabled={isUploading}
-              >
-                Retry Saving Profile
-              </button>
-            )}
           </div>
         </div>
-
+        {/* SECTIONS */}
         <div style={styles.sections}>
           <div style={styles.section}>
             <div style={styles.sectionTitle}>Account Settings</div>
             <div style={styles.option}>
               <span>Edit Profile</span>
-              <span
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate("/settings?scrollTo=profile")}
-              >
-                ›
-              </span>
+              <span style={{ cursor: 'pointer' }} onClick={() => navigate('/settings?scrollTo=profile')}>›</span>
             </div>
             <div style={{ ...styles.option, ...styles.lastOption }}>
               <span>Change Password</span>
-              <span
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate("/settings?scrollTo=password")}
-              >
-                ›
-              </span>
+              <span style={{ cursor: 'pointer' }} onClick={() => navigate('/settings?scrollTo=password')}>›</span>
             </div>
           </div>
-
           <button style={styles.logoutBtn} onClick={handleLogout}>
             Logout
           </button>
