@@ -24,6 +24,11 @@ const styles = {
     alignItems: "center",
     overflow: "hidden",
   },
+  loadingContainer: {
+    color: "white",
+    textAlign: "center",
+    padding: "20px",
+  },
   container: {
     width: "100%",
     maxWidth: "100%",
@@ -196,28 +201,6 @@ const styles = {
       padding: "8px 16px",
       fontSize: "14px",
       marginRight: "10px",
-    },
-  },
-  retryButton: {
-    marginTop: "8px",
-    padding: "6px 12px",
-    backgroundColor: "#5DB075",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: "12px",
-    "@media (min-width: 480px) and (max-width: 767px)": {
-      padding: "7px 14px",
-      fontSize: "13px",
-    },
-    "@media (min-width: 768px) and (max-width: 1024px)": {
-      padding: "8px 15px",
-      fontSize: "13px",
-    },
-    "@media (min-width: 1025px)": {
-      padding: "8px 16px",
-      fontSize: "14px",
     },
   },
   errorMessage: {
@@ -403,91 +386,70 @@ const styles = {
     },
   },
 };
+
 function Profile() {
-  const [userData, setUserData] = useState({
-    initials: "JD",
-    name: "John Doe",
-    email: "john.doe@example.com",
-  });
- 
-  const [avatarFileName, setAvatarFileName] = useState(null);
-  const [avatarImage, setAvatarImage] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-
   const navigate = useNavigate();
 
-  // Helper to generate safe file name from email
-  const getSafeFileName = (email, ext) => {
-    const safeEmail = email.replace(/[^a-zA-Z0-9]/g, '_');
-    return `${safeEmail}_${Date.now()}.${ext}`;
-  };
-
-  // Fetch signed URL for given filename
-  const fetchSignedUrl = async (fileName) => {
-    if (!fileName) return null;
-    const { data, error } = await supabase.storage
-      .from('avatars')
-      .createSignedUrl(fileName, 60 * 60);
-
-    if (error) {
-      console.error('Error fetching signed URL:', error);
-      setErrorMessage('Failed to load avatar image.');
-      return null;
-    }
-    return data.signedUrl;
-  };
-
-  // On mount, check session and fetch user data
+  // Fetch profile data from API
   useEffect(() => {
-    async function checkSession() {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) {
-        console.error('Session error:', sessionError);
-        setErrorMessage('Failed to check authentication status.');
-        return;
-      }
-      setIsAuthenticated(!!session);
-      if (session?.user) {
-        const email = session.user.email;
-        // Prioritize display_name, fallback to username or email local part
-        const username = session.user.user_metadata?.display_name || session.user.user_metadata?.username || email.split('@')[0];
-        const initials = username ? username.slice(0, 2).toUpperCase() : email.charAt(0).toUpperCase() + email.split('@')[0].charAt(0).toUpperCase();
-        setUserData({ initials, name: username, email });
-
-        const avatarUrl = session.user.user_metadata?.avatarUrl || null;
-        if (avatarUrl) {
-          const urlParts = avatarUrl.split('/');
-          const fileName = urlParts[urlParts.length - 1].split('?')[0];
-          setAvatarFileName(fileName);
-          const signedUrl = await fetchSignedUrl(fileName);
-          if (signedUrl) setAvatarImage(signedUrl);
+    async function fetchProfile() {
+      setLoading(true);
+      setErrorMessage(null);
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session) {
+          navigate('/login');
+          return;
         }
+
+        const res = await fetch('/api/profile', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          credentials: 'include',
+        });
+
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            await supabase.auth.signOut();
+            navigate('/login');
+            return;
+          }
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Failed to fetch profile');
+        }
+
+        const data = await res.json();
+        setUserData(data);
+      } catch (err) {
+        console.error('Profile fetch error:', err);
+        setErrorMessage(err.message || 'Failed to load profile');
+        navigate('/login');
+      } finally {
+        setLoading(false);
       }
     }
-    checkSession();
-  }, []);
+    fetchProfile();
+  }, [navigate]);
 
   const handleImageUpload = async (e) => {
-    if (!isAuthenticated) {
-      setErrorMessage('You must be logged in to upload an avatar.');
-      return;
-    }
-
     const file = e.target.files[0];
-    if (!file) {
-      setErrorMessage('No file selected.');
-      return;
-    }
+    if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
       setErrorMessage('File size exceeds 5MB limit.');
       return;
     }
-    if (!['image/png', 'image/jpeg'].includes(file.type)) {
-      setErrorMessage('Only PNG and JPEG images are allowed.');
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      setErrorMessage('Only JPG/PNG images are allowed.');
       return;
     }
 
@@ -496,73 +458,44 @@ function Profile() {
     setSuccessMessage(null);
 
     try {
-      const ext = file.name.split('.').pop();
-      const fileName = getSafeFileName(userData.email, ext);
-
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: true,
-        });
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        setErrorMessage(`Failed to upload image: ${uploadError.message}`);
-        setIsUploading(false);
-        return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('Authentication required');
       }
 
-      setAvatarFileName(fileName);
-      const signedUrl = await fetchSignedUrl(fileName);
-      if (signedUrl) {
-        setAvatarImage(signedUrl);
-        const publicUrl = `https://lgurtucciqvwgjaphdqp.supabase.co/storage/v1/object/public/avatars/${fileName}`;
-        const { data: updateData, error: updateError } = await supabase.auth.updateUser({
-          data: { avatarUrl: publicUrl }
-        });
-
-        if (updateError) {
-          console.error('Update error:', updateError);
-          setErrorMessage(`Uploaded image but failed to save profile: ${updateError.message}`);
-        } else if (updateData?.user) {
-          setSuccessMessage('Profile saved successfully.');
-        }
-      } else {
-        setErrorMessage('Failed to retrieve image URL.');
+      // Extract CSRF token from cookie
+      const csrfCookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('_csrf='));
+      const csrfToken = csrfCookie ? decodeURIComponent(csrfCookie.split('=')[1]) : null;
+      if (!csrfToken) {
+        throw new Error('CSRF token not available. Please refresh the page.');
       }
-    } catch (error) {
-      console.error('Error during upload:', error);
-      setErrorMessage('An unexpected error occurred while uploading the image.');
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
-  const handleRetrySaveProfile = async () => {
-    if (!isAuthenticated || !avatarFileName) {
-      setErrorMessage('Cannot retry: Please log in and ensure an avatar is uploaded.');
-      return;
-    }
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('_csrf', csrfToken);
 
-    setIsUploading(true);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-
-    try {
-      const publicUrl = `https://lgurtucciqvwgjaphdqp.supabase.co/storage/v1/object/public/avatars/${avatarFileName}`;
-      const { data, error } = await supabase.auth.updateUser({
-        data: { avatarUrl: publicUrl }
+      const res = await fetch('/api/profile/avatar', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: formData,
+        credentials: 'include',
       });
-      if (error) {
-        console.error('Retry error:', error);
-        setErrorMessage(`Failed to save profile: ${error.message}`);
-      } else if (data?.user) {
-        setSuccessMessage('Profile saved successfully.');
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Upload failed');
       }
-    } catch (error) {
-      console.error('Retry error:', error);
-      setErrorMessage('An unexpected error occurred while saving the profile.');
+
+      const { avatarUrl } = await res.json();
+      setUserData(prev => ({ ...prev, avatarUrl }));
+      setSuccessMessage('Avatar updated successfully.');
+    } catch (err) {
+      console.error('Avatar upload error:', err);
+      setErrorMessage(err.message || 'Failed to upload avatar');
     } finally {
       setIsUploading(false);
     }
@@ -576,14 +509,28 @@ function Profile() {
         setErrorMessage('Failed to log out. Please try again.');
         return;
       }
-      setIsAuthenticated(false);
-      setUserData({ initials: "JD", name: "John Doe", email: "john.doe@example.com" });
       navigate('/login');
     } catch (error) {
       console.error('Unexpected logout error:', error);
       setErrorMessage('An unexpected error occurred during logout.');
     }
   };
+
+  if (loading) {
+    return (
+      <div style={styles.pageWrapper}>
+        <div style={styles.loadingContainer}>Loading Profile...</div>
+      </div>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <div style={styles.pageWrapper}>
+        <div style={styles.loadingContainer}>Profile not found. Redirecting...</div>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.pageWrapper}>
@@ -598,10 +545,10 @@ function Profile() {
           <div
             style={{
               ...styles.avatar,
-              ...(avatarImage && { backgroundImage: `url(${avatarImage})`, backgroundColor: 'transparent' }),
+              ...(userData.avatarUrl && { backgroundImage: `url(${userData.avatarUrl})`, backgroundColor: 'transparent' }),
             }}
           >
-            {!avatarImage && userData.initials}
+            {!userData.avatarUrl && userData.initials}
           </div>
           <div style={styles.info}>
             <div style={styles.name}>{userData.name}</div>
@@ -614,37 +561,24 @@ function Profile() {
             )}
             <input
               type="file"
-              accept="image/png, image/jpeg"
+              accept="image/jpeg,image/jpg,image/png"
               style={{ display: "none" }}
               id="avatar-upload"
               onChange={handleImageUpload}
-              disabled={isUploading || !isAuthenticated}
+              disabled={isUploading}
             />
             <button
               style={{
                 ...styles.uploadButton,
-                ...((isUploading || !isAuthenticated) && { opacity: 0.6, cursor: 'not-allowed' }),
+                ...(isUploading && { opacity: 0.6, cursor: 'not-allowed' }),
               }}
               onClick={() => document.getElementById("avatar-upload").click()}
-              disabled={isUploading || !isAuthenticated}
+              disabled={isUploading}
             >
-              {isUploading ? 'Uploading...' : isAuthenticated ? 'Upload Avatar' : 'Login to Upload'}
+              {isUploading ? 'Uploading...' : 'Upload Avatar'}
             </button>
-            {errorMessage?.includes('failed to save profile') && (
-              <button
-                style={{
-                  ...styles.retryButton,
-                  ...(isUploading && { opacity: 0.6, cursor: 'not-allowed' }),
-                }}
-                onClick={handleRetrySaveProfile}
-                disabled={isUploading}
-              >
-                Retry Saving Profile
-              </button>
-            )}
           </div>
         </div>
-
         <div style={styles.sections}>
           <div style={styles.section}>
             <div style={styles.sectionTitle}>Account Settings</div>
@@ -667,7 +601,6 @@ function Profile() {
               </span>
             </div>
           </div>
-
           <button style={styles.logoutBtn} onClick={handleLogout}>Logout</button>
         </div>
       </div>
